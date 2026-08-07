@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
+
 
 @ApiTags('User')
 @Controller('user')
@@ -12,22 +13,23 @@ export class UserController {
     private readonly userService: UserService,
   ) {}
 
+
   @Post('register')
-  @ApiOperation({ 
-    summary: 'Inscrire un nouvel utilisateur' 
+  @ApiOperation({
+    summary: 'Inscrire un nouvel utilisateur',
   })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Utilisateur créé avec succès.',
     type: UserResponseDto,
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Données invalides.' 
+  @ApiResponse({
+    status: 400,
+    description: 'Données invalides.',
   })
-  @ApiResponse({ 
-    status: 409, 
-    description: 'Email déjà utilisé.' 
+  @ApiResponse({
+    status: 409,
+    description: 'Email déjà utilisé.',
   })
   async register(
     @Body() createUserDto: CreateUserDto,
@@ -38,21 +40,43 @@ export class UserController {
 
 
   @Get('profile/:id')
-  @ApiOperation({ 
-    summary: 'Récupérer le profil d’un utilisateur' 
+  @ApiOperation({
+    summary: 'Récupérer le profil d’un utilisateur',
   })
-  @ApiResponse({ 
+  @ApiResponse({
     status: 200,
     description: 'Profil récupéré avec succès.',
     type: UserResponseDto,
   })
-  @ApiResponse({ 
+  @ApiResponse({
     status: 404,
-    description: 'Utilisateur introuvable.'
+    description: 'Utilisateur introuvable.',
   })
   async getProfile(
     @Param('id') id: string,
   ): Promise<UserResponseDto> {
     return this.userService.getProfile(id);
+  }
+
+
+  
+  @Patch('profile/:id')
+  @ApiOperation({
+    summary: 'Modifier le profil utilisateur',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Profil mis à jour avec succès.',
+    type: UserResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Utilisateur introuvable.',
+  })
+  async updateProfile(
+    @Param('id') id: string,
+    @Body() data: Partial<CreateUserDto>,
+  ): Promise<UserResponseDto> {
+    return this.userService.updateProfile(id, data);
   }
 }
