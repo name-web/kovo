@@ -3,6 +3,9 @@ import * as bcrypt from 'bcrypt';
 
 import { UserRepository } from './repositories/user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
+import { User } from '@/../../generated/prisma';
+
+type SafeUser = Omit<User, 'password'>;
 
 @Injectable()
 export class UserService {
@@ -10,7 +13,13 @@ export class UserService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async register(createUserDto: CreateUserDto) {
+  private sanitizeUser(user: User): SafeUser {
+    const { password, ...safeUser } = user;
+
+    return safeUser;
+  }
+
+  async register(createUserDto: CreateUserDto): Promise<SafeUser> {
     const existingUser = await this.userRepository.findByEmail(
       createUserDto.email,
     );
@@ -29,28 +38,24 @@ export class UserService {
       password: hashedPassword,
     });
 
-    return {
-      ...user,
-      name: user.name ?? '',
-    };
+    return this.sanitizeUser(user);
   }
 
-
-  async getProfile(id: string) {
+  async getProfile(id: string): Promise<SafeUser> {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
       throw new NotFoundException('Utilisateur introuvable.');
     }
 
-    return {
-      ...user,
-      name: user.name ?? '',
-    };
+    return this.sanitizeUser(user);
   }
 
+  async updateProfile(
+    id: string,
+    data: Partial<User>,
+  ): Promise<SafeUser> {
 
-  async updateProfile(id: string, data: Partial<CreateUserDto>) {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
@@ -58,7 +63,10 @@ export class UserService {
     }
 
     if (data.password) {
-      data.password = await bcrypt.hash(data.password, 10);
+      data.password = await bcrypt.hash(
+        data.password,
+        10,
+      );
     }
 
     const updatedUser = await this.userRepository.update(
@@ -66,9 +74,6 @@ export class UserService {
       data,
     );
 
-    return {
-      ...updatedUser,
-      name: updatedUser.name ?? '',
-    };
+    return this.sanitizeUser(updatedUser);
   }
 }
