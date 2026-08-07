@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -18,9 +19,19 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(
+    app,
+    config,
+    {
+      ignoreGlobalPrefix: false,
+    },
+  );
 
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup(
+    'docs',
+    app,
+    document,
+  );
 
   const port = process.env.PORT ?? 3000;
 

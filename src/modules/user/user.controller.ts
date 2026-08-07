@@ -1,8 +1,9 @@
-import { Controller, Post, Body, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 
 
@@ -38,7 +39,6 @@ export class UserController {
   }
 
 
-
   @Get('profile/:id')
   @ApiOperation({
     summary: 'Récupérer le profil d’un utilisateur',
@@ -59,8 +59,7 @@ export class UserController {
   }
 
 
-  
-  @Patch('profile/:id')
+  @Put('profile/:id')
   @ApiOperation({
     summary: 'Modifier le profil utilisateur',
   })
@@ -75,7 +74,7 @@ export class UserController {
   })
   async updateProfile(
     @Param('id') id: string,
-    @Body() data: Partial<CreateUserDto>,
+    @Body() data: UpdateUserDto,
   ): Promise<UserResponseDto> {
     return this.userService.updateProfile(id, data);
   }
