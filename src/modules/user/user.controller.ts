@@ -12,9 +12,6 @@ export class UserController {
     private readonly userService: UserService,
   ) {}
 
-
-
-  
   @Post('register')
   @ApiOperation({ 
     summary: 'Inscrire un nouvel utilisateur' 
@@ -37,8 +34,6 @@ export class UserController {
   ): Promise<UserResponseDto> {
     return this.userService.register(createUserDto);
   }
-
-
 
 
 
