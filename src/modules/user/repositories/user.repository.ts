@@ -7,10 +7,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
-
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateUserDto): Promise<User> {
     return this.prisma.user.create({
@@ -22,7 +19,6 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-
   async findByEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: {
@@ -30,7 +26,6 @@ export class UserRepository implements IUserRepository {
       },
     });
   }
-
 
   async findById(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({
@@ -40,11 +35,7 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-
-  async update(
-    id: string,
-    data: Partial<CreateUserDto>,
-  ): Promise<User> {
+  async update(id: string, data: Partial<CreateUserDto>): Promise<User> {
     return this.prisma.user.update({
       where: {
         id,

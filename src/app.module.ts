@@ -13,11 +13,7 @@ import { envValidationSchema } from './config/validation.config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [
-        appConfig,
-        databaseConfig,
-        jwtConfig,
-      ],
+      load: [appConfig, databaseConfig, jwtConfig],
       validationSchema: envValidationSchema,
       validationOptions: {
         allowUnknown: true,

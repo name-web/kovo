@@ -1,9 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-
 export class UpdateUserDto {
-
   @ApiPropertyOptional({
     example: 'Kamal',
     description: 'Nom de l’utilisateur',
@@ -12,7 +10,6 @@ export class UpdateUserDto {
   @IsNotEmpty({ message: 'Le nom est obligatoire.' })
   name?: string;
 
-
   @ApiPropertyOptional({
     example: 'kamal@test.com',
     description: 'Adresse email de l’utilisateur',
@@ -20,7 +17,6 @@ export class UpdateUserDto {
   @IsEmail({}, { message: "L'adresse email doit être valide." })
   @IsNotEmpty({ message: "L'email est obligatoire." })
   email?: string;
-
 
   @ApiPropertyOptional({
     example: 'nouveauMotDePasse123',

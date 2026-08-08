@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AuthUserDto } from './auth-user.dto';
 
-
 export class AuthResponseDto {
-
   @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     description:
@@ -11,11 +9,9 @@ export class AuthResponseDto {
   })
   access_token!: string;
 
-
   @ApiProperty({
     type: AuthUserDto,
-    description:
-      'Informations publiques de l’utilisateur connecté.',
+    description: 'Informations publiques de l’utilisateur connecté.',
   })
   user!: AuthUserDto;
 }

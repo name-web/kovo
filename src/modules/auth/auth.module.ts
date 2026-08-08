@@ -8,8 +8,6 @@ import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
-
-
 @Module({
   imports: [
     UserModule,
@@ -19,9 +17,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     JwtModule.register({
       global: true,
 
-      secret:
-        process.env.JWT_SECRET ||
-        'super_secret_key_for_kovo_api_test',
+      secret: process.env.JWT_SECRET || 'super_secret_key_for_kovo_api_test',
 
       signOptions: {
         expiresIn: '1d',
@@ -29,20 +25,10 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
   ],
 
+  controllers: [AuthController],
 
-  controllers: [
-    AuthController,
-  ],
+  providers: [AuthService, JwtStrategy],
 
-
-  providers: [
-    AuthService,
-    JwtStrategy,
-  ],
-
-
-  exports: [
-    AuthService,
-  ],
+  exports: [AuthService],
 })
 export class AuthModule {}

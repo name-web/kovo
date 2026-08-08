@@ -6,132 +6,72 @@ import {
 
 import * as bcrypt from 'bcrypt';
 
+import { User } from '../../../generated/prisma';
+
 import { UserRepository } from './repositories/user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-import { User } from '../../../generated/prisma';
-
-
 type SafeUser = Omit<User, 'password'>;
-
 
 @Injectable()
 export class UserService {
-
-  constructor(
-    private readonly userRepository: UserRepository,
-  ) {}
-
+  constructor(private readonly userRepository: UserRepository) {}
 
   private sanitizeUser(user: User): SafeUser {
-
-    const { password, ...safeUser } = user;
+    const safeUser: SafeUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
 
     return safeUser;
   }
 
-
-
-  async register(
-    createUserDto: CreateUserDto,
-  ): Promise<SafeUser> {
-
-
-    const existingUser =
-      await this.userRepository.findByEmail(
-        createUserDto.email,
-      );
-
+  async register(createUserDto: CreateUserDto): Promise<SafeUser> {
+    const existingUser = await this.userRepository.findByEmail(
+      createUserDto.email,
+    );
 
     if (existingUser) {
-      throw new ConflictException(
-        'Cet email est déjà utilisé.',
-      );
+      throw new ConflictException('Cet email est déjà utilisé.');
     }
 
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    const hashedPassword =
-      await bcrypt.hash(
-        createUserDto.password,
-        10,
-      );
-
-
-    const user =
-      await this.userRepository.create({
-        ...createUserDto,
-        password: hashedPassword,
-      });
-
+    const user = await this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
 
     return this.sanitizeUser(user);
   }
 
-
-
-
-  async getProfile(
-    id: string,
-  ): Promise<SafeUser> {
-
-
-    const user =
-      await this.userRepository.findById(id);
-
+  async getProfile(id: string): Promise<SafeUser> {
+    const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new NotFoundException(
-        'Utilisateur introuvable.',
-      );
+      throw new NotFoundException('Utilisateur introuvable.');
     }
-
 
     return this.sanitizeUser(user);
   }
 
-
-
-
-
-  async updateProfile(
-    id: string,
-    data: UpdateUserDto,
-  ): Promise<SafeUser> {
-
-
-    const user =
-      await this.userRepository.findById(id);
-
+  async updateProfile(id: string, data: UpdateUserDto): Promise<SafeUser> {
+    const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new NotFoundException(
-        'Utilisateur introuvable.',
-      );
+      throw new NotFoundException('Utilisateur introuvable.');
     }
-
-
 
     if (data.password) {
-
-      data.password =
-        await bcrypt.hash(
-          data.password,
-          10,
-        );
-
+      data.password = await bcrypt.hash(data.password, 10);
     }
 
-
-
-    const updatedUser =
-      await this.userRepository.update(
-        id,
-        data,
-      );
-
+    const updatedUser = await this.userRepository.update(id, data);
 
     return this.sanitizeUser(updatedUser);
   }
-
 }

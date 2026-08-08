@@ -15,9 +15,7 @@ export interface JwtUser {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     const secret = configService.get<string>('jwt.secret');
 
     if (!secret) {
@@ -31,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<JwtUser> {
+  validate(payload: JwtPayload): JwtUser {
     console.log('PAYLOAD JWT:', payload);
 
     return {

@@ -1,4 +1,3 @@
-
 import {
   Controller,
   Post,
@@ -24,21 +23,15 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
-
 interface AuthUser {
   id: string;
   email: string;
 }
 
-
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-
-  constructor(
-    private readonly userService: UserService,
-  ) {}
-
+  constructor(private readonly userService: UserService) {}
 
   @Post('register')
   @ApiOperation({
@@ -60,12 +53,8 @@ export class UserController {
   async register(
     @Body() createUserDto: CreateUserDto,
   ): Promise<UserResponseDto> {
-
-    return this.userService.register(
-      createUserDto,
-    );
+    return this.userService.register(createUserDto);
   }
-
 
   @Get('profile')
   @UseGuards(JwtGuard)
@@ -82,92 +71,46 @@ export class UserController {
     status: 401,
     description: 'Token manquant ou invalide.',
   })
-  async getProfile(
-    @CurrentUser() user: AuthUser,
-  ): Promise<UserResponseDto> {
-
+  async getProfile(@CurrentUser() user: AuthUser): Promise<UserResponseDto> {
     try {
-
       console.log('========== GET PROFILE ==========');
       console.log('CURRENT USER:', user);
       console.log('USER ID:', user?.id);
       console.log('USER EMAIL:', user?.email);
 
-
       if (!user) {
-        throw new Error(
-          'CurrentUser est undefined.',
-        );
+        throw new Error('CurrentUser est undefined.');
       }
-
 
       if (!user.id) {
-        throw new Error(
-          'CurrentUser existe mais user.id est undefined.',
-        );
+        throw new Error('CurrentUser existe mais user.id est undefined.');
       }
 
+      console.log('Recherche utilisateur avec ID:', user.id);
 
-      console.log(
-        'Recherche utilisateur avec ID:',
-        user.id,
-      );
+      const profile = await this.userService.getProfile(user.id);
 
+      console.log('PROFILE TROUVE:', profile);
 
-      const profile =
-        await this.userService.getProfile(
-          user.id,
-        );
-
-
-      console.log(
-        'PROFILE TROUVE:',
-        profile,
-      );
-
-      console.log(
-        '================================',
-      );
-
+      console.log('================================');
 
       return profile;
-
     } catch (error) {
+      console.error('========== GET PROFILE ERROR ==========');
 
-      console.error(
-        '========== GET PROFILE ERROR ==========',
-      );
+      console.error('Erreur:', error);
 
-      console.error(
-        'Erreur:',
-        error,
-      );
+      console.error('Message:', error instanceof Error ? error.message : error);
 
-      console.error(
-        'Message:',
-        error instanceof Error
-          ? error.message
-          : error,
-      );
+      console.error('Stack:', error instanceof Error ? error.stack : undefined);
 
-      console.error(
-        'Stack:',
-        error instanceof Error
-          ? error.stack
-          : undefined,
-      );
-
-      console.error(
-        '=======================================',
-      );
-
+      console.error('=======================================');
 
       throw new InternalServerErrorException(
         'Erreur lors de la récupération du profil.',
       );
     }
   }
-
 
   @Put('profile')
   @UseGuards(JwtGuard)
@@ -188,12 +131,6 @@ export class UserController {
     @CurrentUser() user: AuthUser,
     @Body() data: UpdateUserDto,
   ): Promise<UserResponseDto> {
-
-    return this.userService.updateProfile(
-      user.id,
-      data,
-    );
+    return this.userService.updateProfile(user.id, data);
   }
-
 }
-
