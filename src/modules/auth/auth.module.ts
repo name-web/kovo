@@ -1,20 +1,48 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+
 import { UserModule } from '../user/user.module';
+import { JwtStrategy } from './strategies/jwt.strategy';
+
+
 
 @Module({
   imports: [
     UserModule,
+
+    PassportModule,
+
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET || 'super_secret_key_for_kovo_api_test',
-      signOptions: { expiresIn: '1d' },
+
+      secret:
+        process.env.JWT_SECRET ||
+        'super_secret_key_for_kovo_api_test',
+
+      signOptions: {
+        expiresIn: '1d',
+      },
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService],
-  exports: [AuthService],
+
+
+  controllers: [
+    AuthController,
+  ],
+
+
+  providers: [
+    AuthService,
+    JwtStrategy,
+  ],
+
+
+  exports: [
+    AuthService,
+  ],
 })
 export class AuthModule {}
