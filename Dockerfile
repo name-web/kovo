@@ -1,4 +1,4 @@
-# ---------------- build stage ----------------
+# ---------------- Build stage ----------------
 
 FROM node:24-alpine AS builder
 
@@ -18,7 +18,7 @@ RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma gene
 RUN npm run build
 
 
-# ---------------- run stage ----------------
+# ---------------- Production stage ----------------
 
 FROM node:24-alpine AS runner
 
@@ -32,11 +32,14 @@ RUN npm ci --omit=dev
 
 COPY --chown=node:node --from=builder /app/dist ./dist
 COPY --chown=node:node --from=builder /app/generated ./generated
+COPY --chown=node:node --from=builder /app/generated ./dist/generated
 COPY --chown=node:node --from=builder /app/prisma ./prisma
 COPY --chown=node:node --from=builder /app/prisma.config.ts ./prisma.config.ts
+
+RUN chown -R node:node /app
 
 USER node
 
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
