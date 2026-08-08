@@ -1,98 +1,365 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Kovo API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend de l'application **Kovo**, développé avec NestJS, PostgreSQL et Prisma.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+L'API fournit notamment la gestion des utilisateurs et l'authentification JWT.
 
-## Description
+## Stack technique
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+* **Node.js 24**
+* **NestJS**
+* **TypeScript**
+* **PostgreSQL**
+* **Prisma ORM**
+* **JWT**
+* **Passport**
+* **Swagger**
+* **Docker**
+* **Render**
 
-## Project setup
+## Architecture
 
-```bash
-$ npm install
+```text
+src/
+├── common/
+│   └── decorators/
+│       └── current-user.decorator.ts
+│
+├── config/
+│   ├── app.config.ts
+│   ├── database.config.ts
+│   ├── jwt.config.ts
+│   └── validation.config.ts
+│
+├── database/
+│   ├── prisma.module.ts
+│   └── prisma.service.ts
+│
+├── modules/
+│   ├── auth/
+│   │   ├── auth.controller.ts
+│   │   ├── auth.service.ts
+│   │   ├── guards/
+│   │   ├── strategies/
+│   │   └── dto/
+│   │
+│   └── user/
+│       ├── user.controller.ts
+│       ├── user.service.ts
+│       ├── repositories/
+│       ├── dto/
+│
+├── app.controller.ts
+├── app.module.ts
+└── main.ts
+
+prisma/
+├── migrations/
+└── schema.prisma
+
+Dockerfile
+docker-compose.yml
+prisma.config.ts
 ```
 
-## Compile and run the project
+## Installation
+
+Cloner le projet puis installer les dépendances :
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone <URL_DU_REPOSITORY>
+cd kovo
+npm install
 ```
 
-## Run tests
+## Variables d'environnement
+
+Créer un fichier `.env` à la racine du projet.
+
+Exemple :
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE"
+JWT_SECRET="votre_secret_jwt"
+PORT=3000
+```
+
+### Variables principales
+
+| Variable       | Description                               |
+| -------------- | ----------------------------------------- |
+| `DATABASE_URL` | URL de connexion PostgreSQL               |
+| `JWT_SECRET`   | Secret utilisé pour signer les tokens JWT |
+| `PORT`         | Port utilisé par l'application            |
+
+> Les valeurs réelles des variables d'environnement ne doivent jamais être commitées dans Git.
+
+## Base de données
+
+Kovo utilise **PostgreSQL** avec **Prisma ORM**.
+
+### Générer Prisma Client
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npx prisma generate
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Vérifier l'état des migrations
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma migrate status
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Appliquer les migrations en production
 
-## Resources
+```bash
+npx prisma migrate deploy
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### Créer une migration en développement
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npx prisma migrate dev
+```
 
-## Support
+Les migrations actuellement présentes sont :
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```text
+20260806223104_init_user_table
+20260807113920_make_name_required
+```
 
-## Stay in touch
+## Développement local
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Lancer l'application :
 
-## License
+```bash
+npm run start:dev
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+L'API est alors disponible sur :
+
+```text
+http://localhost:3000
+```
+
+Le préfixe global de l'API est :
+
+```text
+/api
+```
+
+### Health check
+
+```text
+GET /api
+```
+
+Réponse :
+
+```json
+{
+  "message": "Kovo API is running"
+}
+```
+
+## Authentification
+
+L'API utilise **JWT Bearer Authentication**.
+
+Après une connexion réussie, l'API retourne un `access_token`.
+
+Le token doit ensuite être envoyé dans l'en-tête HTTP :
+
+```http
+Authorization: Bearer <ACCESS_TOKEN>
+```
+
+## API Utilisateur
+
+### Inscription
+
+```http
+POST /api/user/register
+```
+
+Exemple :
+
+```json
+{
+  "name": "Kamal",
+  "email": "kamal@example.com",
+  "password": "motDePasse123"
+}
+```
+
+Réponse :
+
+```json
+{
+  "id": "uuid",
+  "name": "Kamal",
+  "email": "kamal@example.com",
+  "createdAt": "2026-08-08T14:40:52.872Z",
+  "updatedAt": "2026-08-08T14:40:52.872Z"
+}
+```
+
+### Récupérer le profil
+
+```http
+GET /api/user/profile
+```
+
+Authentification requise :
+
+```http
+Authorization: Bearer <ACCESS_TOKEN>
+```
+
+### Modifier le profil
+
+```http
+PUT /api/user/profile
+```
+
+Authentification requise.
+
+Exemple :
+
+```json
+{
+  "name": "Kamal Test"
+}
+```
+
+## API Authentification
+
+### Connexion
+
+```http
+POST /api/auth/login
+```
+
+Exemple :
+
+```json
+{
+  "email": "kamal@example.com",
+  "password": "motDePasse123"
+}
+```
+
+Réponse :
+
+```json
+{
+  "access_token": "<JWT_TOKEN>",
+  "user": {
+    "id": "uuid",
+    "name": "Kamal",
+    "email": "kamal@example.com"
+  }
+}
+```
+
+## Swagger
+
+La documentation interactive Swagger est disponible en ligne :
+
+**https://kovo-1g6s.onrender.com/docs**
+
+Elle permet notamment de :
+
+* consulter les endpoints ;
+* voir les DTO et leurs champs ;
+* tester les requêtes ;
+* renseigner le JWT avec **Authorize** ;
+* tester les endpoints protégés.
+
+## Docker
+
+Construire l'image :
+
+```bash
+docker build -t kovo-api .
+```
+
+Lancer le conteneur :
+
+```bash
+docker run -p 3000:3000 --env-file .env kovo-api
+```
+
+Pour l'environnement de développement avec Docker Compose :
+
+```bash
+docker compose up --build
+```
+
+## Déploiement
+
+L'API est actuellement déployée sur **Render**.
+
+URL de production :
+
+**https://kovo-1g6s.onrender.com**
+
+Health check :
+
+**https://kovo-1g6s.onrender.com/api**
+
+Documentation Swagger :
+
+**https://kovo-1g6s.onrender.com/docs**
+
+Les variables d'environnement de production, notamment `DATABASE_URL` et `JWT_SECRET`, sont configurées directement dans l'environnement Render.
+
+## Tests
+
+Tests unitaires :
+
+```bash
+npm run test
+```
+
+Tests end-to-end :
+
+```bash
+npm run test:e2e
+```
+
+Coverage :
+
+```bash
+npm run test:cov
+```
+
+## Commandes utiles
+
+```bash
+# Développement
+npm run start:dev
+
+# Build
+npm run build
+
+# Production
+npm run start:prod
+
+# Prisma Client
+npx prisma generate
+
+# Statut des migrations
+npx prisma migrate status
+
+# Migrations production
+npx prisma migrate deploy
+
+# Formatage Prisma
+npx prisma format
+```
+
+## Licence
+
+Projet Kovo.
