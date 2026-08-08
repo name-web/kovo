@@ -2,9 +2,11 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build-and-test:
@@ -20,13 +22,13 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Install dependencies with strict cache
+      - name: Install dependencies
         run: npm ci
 
       - name: Verify TypeScript compilation
         run: npm run build
 
-      - name: Set up Docker Buildx for modern caching
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Validate Dockerfile multi-stage build
