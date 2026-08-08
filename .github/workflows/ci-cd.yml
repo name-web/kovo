@@ -40,12 +40,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Trigger Render Deployment
-        run: |
-          curl -f "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+ 
